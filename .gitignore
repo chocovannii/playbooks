@@ -1,0 +1,6 @@
+inventory.yml
+*inventory.yml
+inventory*
+vault*
+vars/vault*
+vars/vault.yml

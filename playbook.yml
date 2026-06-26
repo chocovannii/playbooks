@@ -1,0 +1,38 @@
+- name: Hoshifuru VPS
+  hosts: vps
+  tasks:
+   - name: Ping my hosts
+     ansible.builtin.ping:
+  vars_files:
+    - vars/vault.yml
+  roles:
+    - role: caddy_ansible.caddy_ansible
+      caddy_environment_variables:
+        BASIC_AUTH_USER: "raiko"
+        BASIC_AUTH_PASSWORD: "$2a$14$73GiLjWcVJ0.coFXIiTSFubOwrXjAD6pVc./iNi0ZdlfmGz4aKMEO"
+      caddy_systemd_capabilities_enabled: true
+      caddy_setcap: true
+      caddy_config: |
+        {
+          email raiko@hoshifu.ru
+          acme_ca https://acme-v02.api.letsencrypt.org/directory
+        }
+
+        mail.hoshifu.ru {
+          handle {{vault_secret_path}}/* {
+            reverse_proxy 127.0.0.1:12279  
+          }
+          respond "Hello, DMS" 200
+        }
+
+        autodiscover.hoshifu.ru, autoconfig.hoshifu.ru {
+          reverse_proxy 127.0.0.1:8000
+        }
+
+        webmail.hoshifu.ru:443 {
+          reverse_proxy 127.0.0.1:9001
+        }
+
+        gitlab.hoshifu.ru:443 {
+          reverse_proxy 127.0.0.1:3333
+        }
